@@ -1,52 +1,43 @@
 #!/usr/bin/python3
-"""Implementing the lockbox algorithm"""
-from typing import List, MutableMapping
+"""Module for task 0
+"""
 
 
-def canUnlockAll(boxes: List[List[int]]) -> bool:
-    """
-    Checks if all boxes can be unlocked.
-    The function checks each box (list), and assigns a
-    value of `True` to each key (number) found in it.
+def canUnlockAll(boxes):
+    """Function that determines if all the boxes are opened.
 
-    Each key can unlock another box, so if at the end of the iteration
-    a box is not found to be in the dictionary, then the function returns
-    False.
+    Number of boxes is n.
+    Each box is numbered sequentially from 0 to n - 1 and each box may
+    contain keys to the other boxes.
+    Key with the same number as a box opens that box.
+    You can assume all keys will be positive integers.
+    There can be keys that do not have boxes.
+    The first box boxes[0] is unlocked.
 
     Args:
-      boxes(list) - list of lists
+        boxes (List[List[int]]): list of lists of integers.
 
     Returns:
-        if each box (list) in the can be opened, the function
-        returns True, otherwise False.
-
+        boolean: True if all boxes can be unlocked, by using all the keys
+        available in all the reachable boxes, and False otherwise.
     """
-    box_dict: MutableMapping[int, int] = {}
-    box_len: int = len(boxes)
-    i: int = 0
-
-    if (len(boxes) == 0 or len(boxes) == 1):
-        return True
-
-    # set the first box to True; it's already open
-    box_dict[i] = True
-
-    while i < box_len:
-        # check if the key to the box is set to True
-        if box_dict.get(i) is True:
-            # set each key in the box to True
-            for key in boxes[i]:
-                box_dict[key] = True
-                if key < box_len and len(boxes[key]) > 0:
-                    for k in boxes[key]:
-                        box_dict[k] = True
-
-        i += 1
-
-    # check for all the available keys of the boxes
-    for num in range(0, box_len):
-        if box_dict.get(num) and box_dict.get(num) is True:
-            continue
-        else:
-            return False
-    return True
+    # Initialize set of visited boxes, starting with the first box
+    visited = {0}
+    # Initialize queue with the first box
+    queue = [boxes[0]]
+    # While there are boxes in the queue
+    # print("boxes type is {}".format(type(boxes)))
+    while queue:
+        # Take the first box from the queue
+        box = queue.pop(0)
+        # Iterate through the keys in the box
+        for key in box:
+            # If the key corresponds to a locked box that has not been
+            # visited yet
+            if key not in visited and key < len(boxes):
+                # Mark the box as visited
+                visited.add(key)
+                # Add the box to the queue to explore its keys
+                queue.append(boxes[key])
+    # Return whether all boxes have been visited
+    return len(visited) == len(boxes)
